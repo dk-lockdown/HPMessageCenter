@@ -1,0 +1,89 @@
+﻿@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Html
+@inject IHttpContextAccessor accessor
+@{
+    List<MenuItem> menuItemList = MenuConfig.GetMenuTree();
+    string absPath = accessor.HttpContext.Request.Path.Value.ToLower();
+    var currentMenu = menuItemList.Find(item => item.LinkUrl.ToLower().Equals(absPath));
+}
+
+@functions
+{
+    Func<MenuItem, MenuItem, string> MenuClassForActiveOpen = (itemMenu, currMenu) =>
+    {
+        if (currMenu == null) return "";
+        if (currMenu.MenuCode.StartsWith(itemMenu.MenuCode))
+        {
+            return "active menu-open";
+        }
+        return "";
+    };
+
+    Func<MenuItem, MenuItem, string> MenuClassForActive = (itemMenu, currMenu) =>
+    {
+        if (currMenu == null) return "";
+        if (currMenu.MenuCode.StartsWith(itemMenu.MenuCode))
+        {
+            return "active";
+        }
+        return "";
+    };
+}
+
+<!-- Left side column. contains the logo and sidebar -->
+<aside class="main-sidebar">
+    <!-- sidebar: style can be found in sidebar.less -->
+    <section class="sidebar">
+
+        <!-- Sidebar Menu -->
+        <ul class="sidebar-menu" data-widget="tree">
+            @foreach (var menu in menuItemList)
+            {
+                if (menu.Children == null || menu.Children.Count == 0)
+                {
+                    <li class="@MenuClassForActive(menu,currentMenu)"><a href="@menu.LinkUrl"><i class="fa @menu.Icon"></i> <span>@menu.Name</span></a></li>
+                }
+                else
+                {
+                    <li class="treeview @MenuClassForActiveOpen(menu, currentMenu)">
+                        <a href="@menu.LinkUrl">
+                            <i class="fa @menu.Icon"></i> <span>@menu.Name</span>
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        @foreach (var menuL2 in menu.Children)
+                        {
+                            <ul class="treeview-menu">
+                                @if (menuL2.Children == null || menuL2.Children.Count == 0)
+                                {
+                                    <li class="@MenuClassForActive(menuL2,currentMenu)"><a href="@menuL2.LinkUrl"><i class="fa @menuL2.Icon"></i>@menuL2.Name</a></li>
+                                }
+                                else
+                                {
+                                    <li class="treeview  @MenuClassForActiveOpen(menuL2, currentMenu)">
+                                        <a href="@menuL2.LinkUrl">
+                                            <i class="fa @menuL2.Icon"></i> @menuL2.Name
+                                            <span class="pull-right-container">
+                                                <i class="fa fa-angle-left pull-right"></i>
+                                            </span>
+                                        </a>
+                                        <ul class="treeview-menu">
+                                            @foreach (var menuL3 in menu.Children)
+                                            {
+                                                <li class="@MenuClassForActive(menuL3,currentMenu)"><a href="@menuL3.LinkUrl"><i class="fa @menuL2.Icon"></i>@menuL2.Name</a></li>
+                                            }
+                                        </ul>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    </li>
+                }
+
+            }
+        </ul>
+        <!-- /.sidebar-menu -->
+    </section>
+    <!-- /.sidebar -->
+</aside>

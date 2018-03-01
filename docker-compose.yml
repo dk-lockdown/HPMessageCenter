@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+  messagecenter.portal:
+    image: messagecenter.portal
+    build:
+      context: ./MessageCenter.Portal
+      dockerfile: Dockerfile

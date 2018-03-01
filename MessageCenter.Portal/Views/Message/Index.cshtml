@@ -1,0 +1,268 @@
+﻿@model MessageIndexModel
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Main.cshtml";
+}
+@section header{
+    <link href="~/bower_components/select2/dist/css/select2.css" rel="stylesheet" />
+    <link href="~/bower_components/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet" />
+    <link href="~/plugins/iCheck/all.css" rel="stylesheet" />
+    <link href="~/bower_components/datatables.net-bs/css/dataTables.bootstrap.css" rel="stylesheet" />
+}
+<div class="row">
+    <div class="box box-primary">
+        <div class="box-header with-border">
+            <h3 class="box-title">Message</h3>
+        </div>
+        <!-- /.box-header -->
+        <div class="box-body" style="min-height:600px;">
+            <div class="box">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Query Filter</h3>
+                    <div class="box-tools pull-right">
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="checker-onlyfailedmsg" class="minimal">
+                                仅失败消息
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="col-lg-3 col-md-2 col-sm-1">
+                        <div class="form-group">
+                            <select id="selector-topic" name="TopicName" class="form-control select2" style="width: 100%;">
+                                <option value="-1">选择Topic</option>
+                                @if (Model != null && Model.Topics != null && Model.Topics.Count > 0)
+                                {
+                                    foreach (var topic in Model.Topics)
+                                    {
+                                        <option value="@topic.Name">@topic.Name</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-2 col-sm-1">
+                        <input type="text" id="text_referenceidentifier" class="form-control" name="ReferenceIdentifier" placeholder="额外标识">
+                    </div>
+                    <div class="col-lg-3 col-md-2 col-sm-1">
+                        <input type="text" id="dataranger-createdate" class="form-control" name="CreateDateRange" placeholder="开始日期时间段">
+                    </div>
+                    <div class="col-lg-3 col-md-2 col-sm-1">
+                        <button type="button" class="btn blue btn-search">Go</button>
+                        <button type="button" class="btn btn-reset">Re</button>
+                    </div>
+                </div>
+            </div>
+
+            <table id="searchlist" class="table table-striped table-hover table-bordered">
+                <thead class="bordered-central"></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <!-- /.box-body -->
+        <div class="box-footer">
+
+        </div>
+        <!-- /.box-footer-->
+    </div>
+</div>
+
+<div class="modal fade" id="modal-view-message">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">Message Detail</h4>
+            </div>
+            <div class="modal-body">
+                <section>
+                    <div class="row">
+                        <label class="control-label col-xs-12 col-sm-3 no-padding-right">MessageID:</label>
+                        <div class="col-xs-12 col-sm-9"><span data-bind="text:MessageId"></span></div>
+                    </div>
+                    <div class="row">
+                        <label class="control-label col-xs-12 col-sm-3 no-padding-right">额外标识:</label>
+                        <div class="col-xs-12 col-sm-9"><span data-bind="text:ReferenceIdentifier"></span></div>
+                    </div>
+                    <div class="row">
+                        <label class="control-label col-xs-12 col-sm-3 no-padding-right">SubscribeTopic:</label>
+                        <div class="col-xs-12 col-sm-9"><span data-bind="text:SubscribeTopic"></span></div>
+                    </div>
+                    <div class="row">
+                        <label class="control-label col-xs-12 col-sm-3 no-padding-right">SourceTopic:</label>
+                        <div class="col-xs-12 col-sm-9"><span data-bind="text:SourceTopic"></span></div>
+                    </div>
+                    <div class="row">
+                        <label class="control-label col-xs-12 col-sm-3 no-padding-right">状态:</label>
+                        <div class="col-xs-12 col-sm-9">
+                            <!-- ko if:Status() == 1 -->
+                            <span data-bind="text:StatusStr"></span>
+                            <!-- /ko -->
+                            <!-- ko ifnot:Status() == 1 -->
+                            <span class="label label-danger" data-bind="text:StatusStr"></span>
+                            <!-- /ko -->
+                        </div>
+                    </div>
+                    <div class="row">
+                        <label class="control-label col-xs-12 col-sm-3 no-padding-right">消息内容:</label>
+                        <div class="col-xs-12 col-sm-9"><span data-bind="text:MessageText"></span></div>
+                    </div>
+                    <div class="row">
+                        
+                        <!-- ko if:ProcessFailRecords().length > 0 -->
+                        <table class="table table-striped">
+                            <tr>
+                                <th style="width: 10px">#</th>
+                                <th>FailRecord</th>
+                                <th>TimePeriod</th>
+                                <th>CreateDateStr</th>
+                            </tr>
+                            <!-- ko foreach:ProcessFailRecords -->
+                            <tr>
+                                <td data-bind="text:$index"></td>
+                                <td data-bind="text:FailRecord"></td>
+                                <td data-bind="text:TimePeriod"></td>
+                                <td data-bind="text:CreateDateStr"></td>
+                            </tr>
+                            <!-- /ko -->
+                        </table>
+                        <!-- /ko -->
+                    </div>
+                </section>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+@section scripts{
+    <script src="~/bower_components/select2/dist/js/select2.js"></script>
+    <script src="~/bower_components/moment/moment.js"></script>
+    <script src="~/bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>
+    <script src="~/plugins/iCheck/icheck.js"></script>
+    <script src="~/bower_components/datatables.net/js/jquery.dataTables.js"></script>
+    <script src="~/bower_components/datatables.net-bs/js/dataTables.bootstrap.js"></script>
+    <script src="~/plugins/knockout/knockout-3.4.0.js"></script>
+    <script src="~/plugins/knockout/ko.mapping.js"></script>
+    <script src="~/plugins/knockout/knockout.extend.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $('.select2').select2();
+            var daterange = $.daterangePicker("#dataranger-createdate");
+            $('input[type="checkbox"].minimal').iCheck({
+                checkboxClass: 'icheckbox_minimal-blue',
+                radioClass: 'iradio_minimal-blue'
+            })
+            var messages = $.grid($("#searchlist"), {
+                serverSide: true,
+                paging: true,//分页
+                ordering: true,
+                ajax: {
+                    "url": "/Message/LoadMessages",
+                    "type": "POST",
+                    "datatype": "json",
+                    "data": function (data) {
+                        var topic = $("#selector-topic").val();
+                        topic = topic == "-1" ? "" : topic;
+                        data = $.extend(data, {
+                            "Topic": topic,
+                            "ReferenceIdentifier": $("#text_referenceidentifier").val(),
+                            "CreateDateFrom": daterange.getStartDate(),
+                            "CreateDateTo": daterange.getEndDate(),
+                            "OnlyFailedMessage": $("#checker-onlyfailedmsg").parent().hasClass("checked")
+                        });
+                    }
+                },
+                order: [[0, "desc"]],
+                columnDefs: [
+                    {
+                        orderable: false, targets: 0, data: "MessageId", title: "操作", sName: 'MessageId', render: function (data, type, full, meta) {
+                            var buttonHtml = "";
+                            if (full.Status == -1) {
+                                buttonHtml = '<button type="button" class="btn btn-default btn-sm btn-process-message">手动处理</button>';
+                            }
+                            return '<button type="button" class="btn btn-default btn-sm btn-view-message">详情</button>' + buttonHtml;
+                        }
+                    },
+                    { orderable: false, targets: 1, data: "SubscribeTopic", title: "Topic", sName: 'Topic' },
+                    {
+                        orderable: false, targets: 2, data: 'StatusStr', title: 'Status', sName: '状态', render: function (data, type, full, meta) {
+                            if (full.Status == 1)
+                            {
+                                return '<span>' + full.StatusStr + '</span>';
+                            }
+                            return '<span class="label label-danger">' + full.StatusStr + '</span>';
+                        }
+                    },
+                    { orderable: false, targets: 3, data: 'ReferenceIdentifier', title: '额外标识', sName: 'ReferenceIdentifier', },
+                    { orderable: false, targets: 4, data: 'RetryCount', title: '重试次数', sName: 'RetryCount', },
+                    { orderable: false, targets: 5, data: 'CreateDateStr', title: '创建时间', sName: 'CreateDate', },
+                    { orderable: false, targets: 6, data: 'ProcessSuccessDateStr', title: '成功处理时间', sName: 'ProcessSuccessDate' },
+                    { orderable: false, targets: 7, data: 'TimePeriod', title: '处理时间（毫秒）', sName: 'TimePeriod' },
+                    { orderable: false, targets: 8, data: 'ProcessorMaintainer', title: '处理器负责人', sName: 'ProcessorMaintainer' }
+                ]
+            });
+
+            var message = {
+                MessageId: ko.observable(),
+                SubscribeTopic: ko.observable(),
+                SourceTopic: ko.observable(),
+                ReferenceIdentifier: ko.observable(),
+                MessageText: ko.observable(),
+                Status: ko.observable(),
+                StatusStr: ko.observable(),
+                ProcessFailRecords: ko.observableArray()
+            }
+
+            ko.applyBindings(message, document.getElementById('modal-view-message'));
+
+            $("#searchlist").on("click", ".btn-process-message", function () {
+                var data = messages.getTable().row($(this).parents('tr')).data();
+                $.post("/Message/ManaualProcess", { messageId: data.MessageId, topic: data.SubscribeTopic }, function (response) {
+                    if (response.Success) {
+                        swal({ text: response.Message }).then(function () {
+                            messages.getTable().ajax.reload();
+                        });
+                    }
+                }, 'json');
+            });
+
+            $("#searchlist").on("click", ".btn-view-message", function () {
+                var data = messages.getTable().row($(this).parents('tr')).data();
+                $.post("/Message/LoadMessage", { messageId: data.MessageId, topic: data.SubscribeTopic }, function (response) {
+                    if (response.Success) {
+                        message.MessageId(response.Data.MessageId);
+                        message.SubscribeTopic(response.Data.SubscribeTopic);
+                        message.SourceTopic(response.Data.SourceTopic);
+                        message.ReferenceIdentifier(response.Data.ReferenceIdentifier);
+                        message.MessageText(response.Data.MessageText);
+                        message.Status(response.Data.Status);
+                        message.StatusStr(response.Data.StatusStr);
+                        message.ProcessFailRecords(response.Data.ProcessFailRecords);
+                        $('#modal-view-message').modal("show");
+                    }
+                },'json');
+            });
+
+            $(".btn-search").on("click", function () {
+                messages.getTable().ajax.reload();
+            });
+
+            $(".btn-reset").on("click", function () {
+                $("#selector-topic").val("-1").trigger('change');
+                $("#text_referenceidentifier").val("");
+                daterange.reset();
+                $("#dataranger-createdate").val(moment().subtract(29, 'days').format('MM/DD/YYYY') + ' - ' + moment().format('MM/DD/YYYY'));
+                messages.getTable().ajax.reload();
+            });
+        });
+    </script>
+}

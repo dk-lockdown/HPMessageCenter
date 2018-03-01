@@ -1,0 +1,256 @@
+﻿@model ClusterIndexModel
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Main.cshtml";
+}
+<div class="row">
+    <div class="box box-primary">
+        <div class="box-header with-border">
+            <h3 class="box-title">集群</h3>
+        </div>
+        <!-- /.box-header -->
+        <div class="box-body" style="min-height:600px;">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="box">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">Servers</h3>
+
+                            <div class="box-tools pull-right">
+                                <button type="button" id="btn-add-server" class="btn btn-box-tool" data-toggle="modal" data-target="#modal-add-server" title="添加">
+                                    <i class="fa fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- /.box-header -->
+                        <div class="box-body" style="min-height:600px;">
+                            @if (Model != null && Model.Servers != null && Model.Servers.Count > 0)
+                            {
+                                int i = Model.Servers.Count();
+                                foreach (var server in Model.Servers)
+                                {
+                                        <div class="btn-group col-md-12">
+                                            <button class="btn col-md-6 btn-server" data-serverhost="@server" title="@server">Node @(i--)</button>
+                                            <a class="btn btn-info col-md-3" href="@server" target="_blank">前往</a>
+                                            <button class="btn btn-danger col-md-3 btn-remove-server" data-serverhost="@server">移除</button>
+                                        </div>
+                                }
+                            }
+                        </div>
+                        <!--/.direct-chat -->
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <div class="box">
+                        <div class="box-header with-border">
+                            <h3 class="box-title box-title-serverhost">ConsumerContainer</h3>
+
+                            <div class="box-tools pull-right">
+                                <button type="button" id="btn-add-consumer" class="btn btn-box-tool" data-toggle="modal" data-target="#modal-add-consumer" title="添加">
+                                    <i class="fa fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- /.box-header -->
+                        <div class="box-body" style="min-height:600px;">
+                            <div class="row" id="section-server-consumers">
+                                <!-- ko if:Consumers().length > 0 -->
+                                <!-- ko foreach:Consumers -->
+                                <div class="col-lg-2 col-md-3 col-sm-6">
+                                    <div class="box box-solid box-body">
+                                        <div class="col-lg-12"><section class="text-center" data-bind="text:$data.Exchange,attr:{'title':$data.Exchange}"></section></div>
+                                        <div class="col-lg-12"><section class="text-center" data-bind="text:$data.Topic,attr:{'title':$data.Topic"></section></div>
+                                        <div class="col-lg-12">
+                                            <section class="text-center">
+                                                <button type="button" class="btn btn-danger btn-xs btn-remove-consumer"  data-bind="attr:{'data-exchange':$data.Exchange,'data-topic':$data.Topic}">移除</button>
+                                            </section>
+                                        </div>
+                                    </div>
+                                </div>                                
+                                <!-- /ko -->
+                                <!-- /ko -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /.box-body -->
+        <div class="box-footer">
+
+        </div>
+        <!-- /.box-footer-->
+    </div>
+    <!--/.direct-chat -->
+</div>
+
+<div class="modal fade" id="modal-add-server">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">添加ServerNode</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal form-group" id="form-add-server" method="post">
+                    <div class="form-group">
+                        <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="ServerHost">ServerHost：</label>
+                        <div class="col-xs-12 col-sm-9">
+                            <div class="clearfix">
+                                <input type="text" name="ServerHost" class="col-xs-12 col-sm-8" maxlength="40" />
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+                <button type="button" id="btn-save-server" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+<div class="modal fade" id="modal-add-consumer">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">添加</h4>
+            </div>
+            <div class="modal-body">
+
+                <form class="form-horizontal form-group" id="form-subscribe-topic" method="post">
+                    <div class="form-group ">
+                        <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="TopicName">Topic：</label>
+                        <div class="col-xs-12 col-sm-9">
+                            <div class="clearfix">
+                                <select id="selector-topic" name="TopicName" class="select2  col-xs-6 col-sm-4" style="padding: 2px 2px;">
+                                    <option value="-1">请选择</option>
+                                    @if (Model != null && Model.Topics != null && Model.Topics.Count > 0)
+                                    {
+                                        foreach (var topic in Model.Topics)
+                                        {
+                                            <option value="@topic.Name" data-exchange="@topic.ExchangeName">@topic.Name</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+                <button type="button" id="btn-save-consumer" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+@section scripts{
+    <script src="~/plugins/knockout/knockout-3.4.0.js"></script>
+    <script src="~/plugins/knockout/ko.mapping.js"></script>
+    <script src="~/plugins/knockout/knockout.extend.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $("#btn-save-server").on("click", function () {
+                $.post("/Cluster/AddServerNode", {
+                    server: $("#form-add-server [name='ServerHost']").val()
+                }, function (response) {
+                    if (response.Success)
+                    {
+                        swal({ text: response.Message }).then(function () {
+                            window.location.reload();
+                        });
+                    }
+                }, "json");
+            });
+
+            $(".btn-remove-server").on("click", function () {
+                $.post("/Cluster/RemoveServerNode", {
+                    server: $(this).data("serverhost")
+                }, function (response) {
+                    if (response.Success) {
+                        swal({ text: response.Message }).then(function () {
+                            window.location.reload();
+                        });
+                    }
+                }, "json");
+            });
+
+            var viewModel = {
+                Consumers: ko.observableArray()
+            };
+
+            ko.applyBindings(viewModel, document.getElementById('section-server-consumers'));
+
+            $(".btn-server").on("click", function () {
+                if (!$(this).hasClass("btn-success")) {
+                    viewModel.Consumers([]);
+                    $.post("/Cluster/LoadConsumers", { Host: $(this).data("serverhost") }, function (response) {
+                        if (response.Success) {
+                            viewModel.Consumers(response.Data);                            
+                        }
+                    }, "json");
+                    $(".box-title-serverhost").text($(this).data("serverhost")); 
+                }
+                $(".btn-server").removeClass("btn-success");
+                $(this).addClass("btn-success");
+            });
+
+            $("#btn-save-consumer").on("click", function () {
+                if ($(".btn-server.btn-success").length != 0) {
+                    $.post("/Cluster/AddConsumer", {
+                        Host: $(".btn-server.btn-success").data("serverhost"),
+                        Exchange: $("#form-subscribe-topic [name='TopicName'] option:selected").data("exchange"),
+                        Topic: $("#form-subscribe-topic [name='TopicName']").val()
+                    }, function (response) {
+                        if (response.Success) {
+                            $('#modal-add-consumer').modal("hide");
+                            swal({ text: response.Message }).then(function () {
+                                $.post("/Cluster/LoadConsumers", { Host: $(".btn-server.btn-success").data("serverhost") }, function (response) {
+                                    if (response.Success) {
+                                        viewModel.Consumers(response.Data);
+                                    }
+                                }, "json");
+                            });
+                        }
+                    }, "json");
+                }
+                else
+                {
+                    swal({ text: "请先选择一个集群节点！" });
+                }
+            });
+
+            $("#section-server-consumers").on("click",".btn-remove-consumer", function () {
+                $.post("/Cluster/RemoveConsumer", {
+                    Host: $(".btn-server.btn-success").data("serverhost"),
+                    Exchange: $(this).data("exchange"),
+                    Topic: $(this).data("topic")
+                }, function (response) {
+                    if (response.Success) {
+                        $('#modal-add-consumer').modal("hide");
+                        swal({ text: response.Message }).then(function () {
+                            $.post("/Cluster/LoadConsumers", { Host:$(".btn-server.btn-success").data("serverhost")}, function (response) {
+                                if (response.Success) {
+                                    viewModel.Consumers(response.Data);
+                                }
+                            }, "json");
+                        });
+                    }
+                }, "json");
+            });
+        })
+    </script>
+}

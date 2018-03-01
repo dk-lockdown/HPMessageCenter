@@ -1,0 +1,211 @@
+﻿@model HomeIndexModel
+@{
+    ViewBag.Title = "Home Page";
+    Layout = "~/Views/Shared/_Main.cshtml";
+}
+
+<div class="row">
+    <div class="box box-primary">
+        <div class="box-header with-border">
+            <h3 class="box-title">App</h3>
+
+            <div class="box-tools pull-right">
+                <button type="button" id="btn-create-app" class="btn btn-box-tool" data-toggle="modal" data-target="#modal-create-app" title="添加">
+                    <i class="fa fa-plus"></i>
+                </button>
+            </div>
+        </div>
+        <!-- /.box-header -->
+        <div class="box-body">
+            <div class="row">
+                @if (Model != null && Model.Apps != null && Model.Apps.Count > 0)
+                {
+                    foreach (var app in Model.Apps)
+                    {
+                        <div class="col-lg-2 col-md-3 col-sm-6">
+                            <div class="box box-solid box-body">
+                                <div class="col-lg-12"><section class="text-center">@app.AppName</section></div>
+                                <div class="col-lg-12"><section class="text-center">@app.AppID</section></div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+        <!-- /.box-body -->
+        <div class="box-footer">
+        
+        </div>
+        <!-- /.box-footer-->
+    </div>
+    <!--/.direct-chat -->
+</div>
+<div class="row">
+    <div class="box box-primary">
+        <div class="box-header with-border">
+            <h3 class="box-title">交换器</h3>
+
+            <div class="box-tools pull-right">
+                <button type="button" id="btn-create-exchange" class="btn btn-box-tool" data-toggle="modal" data-target="#modal-create-exchange" title="添加">
+                    <i class="fa fa-plus"></i>
+                </button>
+            </div>
+        </div>
+        <!-- /.box-header -->
+        <div class="box-body">
+            <div class="row">
+                @if (Model != null && Model.Exchanges != null && Model.Exchanges.Count > 0)
+                {
+                    foreach (var exchange in Model.Exchanges)
+                    {
+                        <div class="col-lg-2 col-md-3 col-sm-6">
+                            <div class="box box-solid box-body">
+                                <div class="row"><section class="text-center">@exchange.Name</section></div>
+                                <div class="row"><section class="text-center" title="AppName">@exchange.AppName</section></div>
+                                <div class="row"><section class="text-center" title="AppID">@exchange.AppID</section></div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+        <!-- /.box-body -->
+        <div class="box-footer">
+
+        </div>
+        <!-- /.box-footer-->
+    </div>
+    <!--/.direct-chat -->
+</div>
+
+<div class="modal fade" id="modal-create-app">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">创建新App</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal form-group" id="form-create-app" method="post">
+                    <div class="form-group">
+                        <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="AppID">AppID：</label>
+                        <div class="col-xs-12 col-sm-9">
+                            <div class="clearfix">
+                                <input type="text" name="AppID" class="col-xs-12 col-sm-8" maxlength="40" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="AppName">App名称：</label>
+                        <div class="col-xs-12 col-sm-9">
+                            <div class="clearfix">
+                                <input type="text" name="AppName" class="col-xs-12 col-sm-8" maxlength="40" />
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+                <button type="button" id="btn-save-app" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+
+<div class="modal fade" id="modal-create-exchange">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">创建新Exchange</h4>
+            </div>
+            <div class="modal-body">
+
+                <form class="form-horizontal form-group" id="form-create-exchange" method="post">
+                    <div class="form-group ">
+                        <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="AppID">App：</label>
+                        <div class="col-xs-12 col-sm-9">
+                            <div class="clearfix">
+                                <select id="selector-app" name="AppID" class="select2  col-xs-6 col-sm-4" style="padding: 2px 2px;">
+                                    <option value="-1">请选择</option>
+                                    @if (Model != null && Model.Apps != null && Model.Apps.Count > 0)
+                                    {
+                                        foreach (var app in Model.Apps)
+                                        {
+                                            <option value="@app.AppID">@app.AppName</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="ExchangeName">名称：</label>
+                        <div class="col-xs-12 col-sm-9">
+                            <div class="clearfix">
+                                <input type="text" name="ExchangeName" class="col-xs-12 col-sm-8" maxlength="40" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="ExchangeMemo">备注：</label>
+                        <div class="col-xs-12 col-sm-9">
+                            <div class="clearfix">
+                                <input type="text" name="ExchangeMemo" class="col-xs-12 col-sm-8" maxlength="40" />
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+                <button type="button" id="btn-save-exchange" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+@section scripts{
+    <script type="text/javascript">
+        $(function () {
+            $("#btn-save-app").on("click", function () {
+                $.post("/Server/CreateApp", {
+                    AppID: $("#form-create-app [name='AppID']").val(),
+                    AppName: $("#form-create-app [name='AppName']").val()
+                }, function (response) {
+                    if (response.Success)
+                    {
+                        swal({ text: response.Message }).then(function () {
+                            window.location.reload();
+                        });
+                    }
+                }, "json");
+            });
+            $("#btn-save-exchange").on("click", function () {
+                $.post("/Server/CreateExchange", {
+                    AppID: $("#form-create-exchange [name='AppID']").val(),
+                    Name: $("#form-create-exchange [name='ExchangeName']").val(),
+                    Memo: $("#form-create-exchange [name='ExchangeMemo']").val()
+                }, function (response) {
+                    if (response.Success) {
+                        swal({ text: response.Message }).then(function () {
+                            window.location.reload();
+                        });
+                    }
+                }, "json");
+            });
+        })
+    </script>
+}
