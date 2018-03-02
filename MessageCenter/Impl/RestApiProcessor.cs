@@ -14,11 +14,6 @@ namespace MessageCenter
     {
         public async Task<bool> Process(IMessage message)
         {
-            await Task.Run(() =>
-            {
-
-            });
-            return false;
             message = (TextMessage)message;
             string host = TopicConfiguratorGeter.TopicHelper.GetProcessorConfig(message.Headers[BuiltinKeys.Topic]);
             using (var httpClient = new HttpClient())
