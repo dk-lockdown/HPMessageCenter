@@ -30,7 +30,7 @@
 
 ProcessorConfig为消息消费者处理消息的Restful接口
 
- **最后在消费者管理页面中添加Sever要运行的Consumer** 
+ **最后在消费者管理页面中添加Server要运行的Consumer** 
 ![输入图片说明](https://gitee.com/uploads/images/2018/0301/162558_5e4275d8_13001.png "TIM图片20180301162542.png")
 
 此时，通过Publisher/Publish接口发送消息到RabbitMQ，系统中的消费者会自动访问配置的对应消息处理接口处理消息。
