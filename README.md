@@ -47,6 +47,34 @@ MessageTransit模块是一个高度抽象的模块，开发者可以继承它的
 
 一个Sever里每个Topic对应一个消费者。一个消费者一次处理一个消息，如果发生消息处理不及时的情况，可以部署多个Sever，并在消费者管理页面添加对应的消息消费者。如果消息数量进一步提高，就需要同步增加消息Restful处理接口的处理能力。比如，一个消息处理接口可以处理每分钟300个并发，一个Sever每分钟只能处理60个消息，此时可以部署5个Sever。消息进一步增加，消息处理接口性能达到瓶颈，增加消息处理接口的处理能力，再增加Sever数即可提高性能。
 
+### 开发说明
+
+**Restful接口规范** 
+
+```
+    public ActionResult Index(string topic,string messagetext)
+    {
+            if (!string.IsNullOrWhiteSpace(messagetext))
+            {
+                messagetext = HttpUtility.UrlDecode(messagetext);
+                var request = JsonConvert.DeserializeObject<IndexRequest>(messagetext);
+                //你的业务代码
+            }
+            return Json(new
+            {
+                Code=0
+            },JsonRequestBehavior.AllowGet);
+        }
+    }
+```
+
+接口接收两个参数，参数名固定为topic和messagetext，messagetext是你的消息的json序列化字符串。处理成功返回Code=0。其他返回视为处理失败。
+
+**消息发送** 
+
+将消息发送到HPMessageCenter的接口/Publisher/Publish即可。消息体需序列化为json格式，包含topic和messagetext两个属性。例如：
+![输入图片说明](https://gitee.com/uploads/images/2018/0316/154630_ca6f5509_13001.png "TIM图片20180316154337.png")
+
 ### 如有疑问，欢迎加群讨论：
 
 ![输入图片说明](https://gitee.com/uploads/images/2018/0302/122833_1c1d483a_13001.png "HPMessageCenter群二维码.png")
