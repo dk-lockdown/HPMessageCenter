@@ -1,3 +1,7 @@
+CREATE DATABASE IF NOT EXISTS MessageCenter_v2 DEFAULT CHARACTER SET = utf8mb4;
+
+Use MessageCenter_v2;
+
 /*
 Navicat MySQL Data Transfer
 
