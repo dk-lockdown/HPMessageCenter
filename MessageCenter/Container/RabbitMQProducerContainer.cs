@@ -28,7 +28,7 @@ namespace MessageCenter
                 }
                 if (message.Headers.TryGetValue(BuiltinKeys.Topic, out string topic))
                 {
-                    properties.Add(BuiltinKeys.Exchange, topic);
+                    properties.Add(BuiltinKeys.Topic, topic);
                 }
                 producer = accessPoint.createProducer(properties);
                 producer.startup();
